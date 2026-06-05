@@ -75,10 +75,12 @@
     font-family: 'Rajdhani', sans-serif;
     font-size: 22px;
     font-weight: 700;
-    color: var(--text);
     letter-spacing: 0.5px;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: var(--logo-gradient, linear-gradient(90deg, #e8f2ff, #3d8eff));
   }
-  .logo span { color: var(--accent); }
   .header-right { display: flex; align-items: center; gap: 10px; }
 
   .admin-btn {
@@ -505,14 +507,7 @@
   }
 
   /* ── SITE NAME PREVIEW ── */
-  .site-name-preview {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    margin-top: 6px;
-  }
-  .site-name-preview span { color: var(--accent); }
+
 
   /* ── ITEM DETAIL MODAL ── */
   .detail-modal {
@@ -715,6 +710,21 @@
   }
   .toggle-track.on .toggle-thumb { transform: translateX(14px); background: var(--accent); }
 
+  /* ── GRAD DIR BUTTONS ── */
+  .grad-dir-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    width: 34px; height: 32px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .grad-dir-btn:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+  .grad-dir-btn.active { background: rgba(61,142,255,0.18); border-color: rgba(61,142,255,0.4); color: var(--accent); }
+
   /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -738,8 +748,6 @@
   <button class="ap-btn ap-btn-blue" onclick="openAddCard()">+ Add Item</button>
   <button class="ap-btn ap-btn-blue" onclick="openManageCategories()">📁 Categories</button>
   <button class="ap-btn" onclick="openSiteSettings()">⚙ Site Settings</button>
-  <button class="ap-btn" onclick="openChangePw()">🔑 Change Password</button>
-  <button class="ap-btn" style="margin-left:auto; color:#e06c75; border-color:rgba(224,108,117,0.3); background:rgba(224,108,117,0.1);" onclick="logoutAdmin()">Logout</button>
 </div>
 
 <!-- CATEGORY TABS -->
@@ -788,49 +796,52 @@
   </div>
 </div>
 
-<!-- Change Password -->
-<div class="overlay" id="changePwOverlay">
-  <div class="modal" style="width:340px;">
-    <div class="modal-title">🔑 Change Password</div>
-    <button class="modal-close" onclick="modalClose('changePwOverlay')">✕</button>
-    <div class="form-group">
-      <label class="form-label">Current Password</label>
-      <input class="form-input" type="password" id="cpCurrent" placeholder="Current password" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">New Password</label>
-      <input class="form-input" type="password" id="cpNew" placeholder="New password" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">Confirm New Password</label>
-      <input class="form-input" type="password" id="cpConfirm" placeholder="Confirm new password" />
-    </div>
-    <div class="err" id="cpErr"></div>
-    <button class="btn-primary" onclick="doChangePw()">Update Password</button>
-  </div>
-</div>
-
 <!-- Site Settings -->
 <div class="overlay" id="siteSettingsOverlay">
   <div class="modal" style="width:380px;">
     <div class="modal-title">⚙ Site Settings</div>
     <button class="modal-close" onclick="modalClose('siteSettingsOverlay')">✕</button>
+
     <div class="form-group">
-      <label class="form-label">Site Name (first part)</label>
-      <input class="form-input" id="ssName1" placeholder="e.g. Value" oninput="updateNamePreview()" />
+      <label class="form-label">Site Name</label>
+      <input class="form-input" id="ssName1" placeholder="e.g. ValueList.gg" oninput="updateNamePreview()" />
     </div>
+
     <div class="form-group">
-      <label class="form-label">Site Name (accent part)</label>
-      <input class="form-input" id="ssName2" placeholder="e.g. List" oninput="updateNamePreview()" />
+      <label class="form-label" style="margin-bottom:10px;">Logo Gradient</label>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+        <div style="flex:1;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:0.5px;">COLOR 1</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="color" id="ssColor1" value="#e8f2ff" oninput="updateNamePreview()" style="width:36px;height:32px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;background:none;padding:2px;" />
+            <input class="form-input" id="ssColor1Hex" placeholder="#e8f2ff" oninput="syncColorFromHex('ssColor1',this)" style="font-size:12px;font-family:monospace;" />
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:0.5px;">COLOR 2</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="color" id="ssColor2" value="#3d8eff" oninput="updateNamePreview()" style="width:36px;height:32px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;background:none;padding:2px;" />
+            <input class="form-input" id="ssColor2Hex" placeholder="#3d8eff" oninput="syncColorFromHex('ssColor2',this)" style="font-size:12px;font-family:monospace;" />
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:0.5px;">DIRECTION</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="grad-dir-btn active" data-deg="90" onclick="setGradDir(this)">→</button>
+          <button class="grad-dir-btn" data-deg="135" onclick="setGradDir(this)">↘</button>
+          <button class="grad-dir-btn" data-deg="180" onclick="setGradDir(this)">↓</button>
+          <button class="grad-dir-btn" data-deg="45" onclick="setGradDir(this)">↗</button>
+          <button class="grad-dir-btn" data-deg="0" onclick="setGradDir(this)">↑</button>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Domain suffix</label>
-      <input class="form-input" id="ssDomain" placeholder="e.g. .gg" oninput="updateNamePreview()" />
-    </div>
+
     <div class="form-group">
       <label class="form-label">Preview</label>
-      <div class="site-name-preview" id="namePreview"></div>
+      <div id="namePreview" style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:0.5px;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;"></div>
     </div>
+
     <button class="btn-primary" onclick="saveSiteSettings()">Save Settings</button>
   </div>
 </div>
@@ -854,115 +865,79 @@
 
 <!-- Add / Edit Card -->
 <div class="overlay" id="cardOverlay">
-  <div class="modal">
+  <div class="modal" style="width:460px;">
     <div class="modal-title" id="cardModalTitle">+ Add Item</div>
     <button class="modal-close" onclick="modalClose('cardOverlay')">✕</button>
 
+    <!-- Name -->
     <div class="form-group">
       <label class="form-label">Item Name</label>
       <input class="form-input" id="ciName" placeholder="e.g. Dragon Blade" />
     </div>
+
+    <!-- Value / Rarity / Category -->
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Value</label>
         <input class="form-input" id="ciValue" type="number" placeholder="e.g. 41000" />
       </div>
       <div class="form-group">
-        <label class="form-label">Supply</label>
-        <input class="form-input" id="ciSupply" type="number" placeholder="e.g. 84" />
+        <label class="form-label">Rarity</label>
+        <select class="form-select" id="ciRarity">
+          <option>divine</option><option>mythic</option><option>legendary</option>
+          <option>epic</option><option>rare</option><option>uncommon</option><option>common</option>
+        </select>
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Rarity</label>
-        <select class="form-select" id="ciRarity">
-          <option>divine</option>
-          <option>mythic</option>
-          <option>legendary</option>
-          <option>epic</option>
-          <option>rare</option>
-          <option>uncommon</option>
-          <option>common</option>
-        </select>
-      </div>
       <div class="form-group">
         <label class="form-label">Category</label>
         <select class="form-select" id="ciCategory"></select>
       </div>
-    </div>
-    <div class="form-row">
       <div class="form-group">
         <label class="form-label">Demand</label>
         <select class="form-select" id="ciDemand">
-          <option>Amazing</option>
-          <option>Very High</option>
-          <option>High</option>
-          <option>Good</option>
-          <option>Below Average</option>
-          <option>Low</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Stability</label>
-        <select class="form-select" id="ciStability">
-          <option>Rising</option>
-          <option>Stable</option>
-          <option>Overpaid</option>
-          <option>Fluctuating</option>
-          <option>Declining</option>
+          <option>Amazing</option><option>Very High</option><option>High</option>
+          <option>Good</option><option>Below Average</option><option>Low</option>
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Stability</label>
+      <select class="form-select" id="ciStability">
+        <option>Rising</option><option>Stable</option><option>Overpaid</option>
+        <option>Fluctuating</option><option>Declining</option>
+      </select>
+    </div>
+
+    <!-- Description -->
     <div class="form-group">
       <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="ciDesc" placeholder="Enter a description for this item..." style="min-height:60px;resize:vertical;"></textarea>
+      <textarea class="form-textarea" id="ciDesc" placeholder="Optional description shown on the item page..." style="min-height:60px;resize:vertical;"></textarea>
     </div>
+
+    <!-- Field Visibility -->
     <div class="form-group">
       <label class="form-label" style="margin-bottom:10px;">Field Visibility</label>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;">
-          <span style="font-size:12px;color:var(--text-dim);">💰 Value</span>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="toggleVis('value')">
-            <span id="visLabel_value" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">Visible</span>
-            <div class="toggle-track on" id="visTrack_value"><div class="toggle-thumb"></div></div>
-          </label>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;">
-          <span style="font-size:12px;color:var(--text-dim);">📈 Demand</span>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="toggleVis('demand')">
-            <span id="visLabel_demand" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">Visible</span>
-            <div class="toggle-track on" id="visTrack_demand"><div class="toggle-thumb"></div></div>
-          </label>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;">
-          <span style="font-size:12px;color:var(--text-dim);">⚖️ Stability</span>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="toggleVis('stability')">
-            <span id="visLabel_stability" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">Visible</span>
-            <div class="toggle-track on" id="visTrack_stability"><div class="toggle-thumb"></div></div>
-          </label>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;">
-          <span style="font-size:12px;color:var(--text-dim);">📝 Description</span>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="toggleVis('desc')">
-            <span id="visLabel_desc" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">Visible</span>
-            <div class="toggle-track on" id="visTrack_desc"><div class="toggle-thumb"></div></div>
-          </label>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;">
-          <span style="font-size:12px;color:var(--text-dim);">📊 Price Chart</span>
-          <label style="display:flex;align-items:center;gap:7px;cursor:pointer;" onclick="toggleVis('chart')">
-            <span id="visLabel_chart" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">Visible</span>
-            <div class="toggle-track on" id="visTrack_chart"><div class="toggle-thumb"></div></div>
-          </label>
-        </div>
-      </div>
+      <div id="visFieldsList" style="display:flex;flex-direction:column;gap:6px;"></div>
     </div>
+
+    <!-- Custom Details -->
+    <div class="form-group">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <label class="form-label" style="margin-bottom:0;">Custom Details</label>
+        <button onclick="addCustomDetail()" style="background:rgba(61,142,255,0.1);border:1px solid rgba(61,142,255,0.25);border-radius:20px;color:rgba(120,180,255,0.9);font-family:Inter,sans-serif;font-size:11px;font-weight:500;padding:4px 12px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(61,142,255,0.2)'" onmouseout="this.style.background='rgba(61,142,255,0.1)'">+ Add Detail</button>
+      </div>
+      <div id="customDetailsList" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
+    <!-- Icon -->
     <div class="form-group">
       <label class="form-label">Icon</label>
       <div id="iconPickerWrap" style="display:flex;gap:10px;align-items:flex-start;">
         <div id="iconPreview" style="width:64px;height:64px;background:rgba(0,0,0,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;overflow:hidden;border:1px solid var(--border-bright);">❓</div>
         <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
-          <label id="uploadLabel" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px dashed var(--border-bright);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:12px;color:var(--muted);transition:border-color 0.15s;">
+          <label style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px dashed var(--border-bright);border-radius:8px;padding:9px 12px;cursor:pointer;font-size:12px;color:var(--muted);transition:border-color 0.15s;">
             <span style="font-size:16px;">📁</span> Upload PNG / JPG / WEBP / GIF
             <input type="file" id="ciImgFile" accept="image/*" style="display:none;" onchange="handleImgUpload(this)" />
           </label>
@@ -971,6 +946,7 @@
         </div>
       </div>
     </div>
+
     <div class="err" id="cardErr"></div>
     <button class="btn-primary" id="cardSaveBtn" onclick="saveCard()">Save Item</button>
     <button class="btn-secondary btn-danger" id="cardDelBtn" onclick="deleteCard()" style="display:none;">Delete Item</button>
@@ -987,42 +963,79 @@
       <div class="detail-name" id="detailName"></div>
       <div class="detail-rarity-badge" id="detailRarity"></div>
     </div>
-    <div class="detail-value-block">
+    <div class="detail-value-block" id="detailValueBlock">
       <div class="detail-value-label">Current Value</div>
       <div class="detail-value-num" id="detailValue"></div>
     </div>
     <div class="detail-stats-grid">
-
       <div class="detail-stat-cell" id="detailDescCell" style="grid-column:1/-1;">
         <div class="detail-stat-cell-label">Description</div>
         <div class="detail-stat-cell-value" id="detailDesc" style="font-size:12px;line-height:1.5;color:var(--text-dim);white-space:pre-wrap;"></div>
       </div>
-      <div class="detail-stat-cell">
+      <div class="detail-stat-cell" id="detailDemandCell">
         <div class="detail-stat-cell-label">Demand</div>
         <div class="detail-stat-cell-value" id="detailDemand"></div>
       </div>
-      <div class="detail-stat-cell">
+      <div class="detail-stat-cell" id="detailStabCell">
         <div class="detail-stat-cell-label">Stability</div>
         <div class="detail-stat-cell-value" id="detailStability"></div>
       </div>
     </div>
+    <!-- Custom details grid -->
+    <div class="detail-stats-grid" id="detailCustomGrid" style="padding-top:0;display:none;"></div>
     <!-- CHART SECTION -->
-    <div class="detail-chart-section">
+    <div class="detail-chart-section" id="detailChartSection">
       <div class="detail-divider" style="margin:0 0 14px;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <span style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Price History</span>
-        <div class="chart-range-btns" id="chartRangeBtns">
-          <button class="chart-range-btn active" onclick="setChartRange('1m',this)">1m</button>
-          <button class="chart-range-btn" onclick="setChartRange('3m',this)">3m</button>
-          <button class="chart-range-btn" onclick="setChartRange('6m',this)">6m</button>
-          <button class="chart-range-btn" onclick="setChartRange('1y',this)">1y</button>
-          <button class="chart-range-btn" onclick="setChartRange('all',this)">All</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button id="editHistoryBtn" class="chart-range-btn" onclick="openHistoryEditor()" style="display:none;background:rgba(255,107,53,0.1);border-color:rgba(255,107,53,0.3);color:rgba(255,130,80,0.9);font-size:10px;padding:4px 9px;">✏️ Edit</button>
+          <div class="chart-range-btns" id="chartRangeBtns">
+            <button class="chart-range-btn active" onclick="setChartRange('1m',this)">1m</button>
+            <button class="chart-range-btn" onclick="setChartRange('3m',this)">3m</button>
+            <button class="chart-range-btn" onclick="setChartRange('6m',this)">6m</button>
+            <button class="chart-range-btn" onclick="setChartRange('1y',this)">1y</button>
+            <button class="chart-range-btn" onclick="setChartRange('all',this)">All</button>
+          </div>
         </div>
       </div>
       <div class="chart-canvas-wrap">
         <canvas id="detailChart" style="display:none;width:100%;height:160px;"></canvas>
-        <div class="chart-no-data" id="chartNoData">No history yet — edit the value to start tracking</div>
+        <div class="chart-no-data" id="chartNoData">No value changes yet</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Editor Overlay -->
+<div class="overlay" id="historyEditorOverlay">
+  <div class="modal" style="width:440px;max-height:85vh;">
+    <div class="modal-title">📊 Edit Price History</div>
+    <button class="modal-close" onclick="modalClose('historyEditorOverlay')">✕</button>
+
+    <!-- Add new point -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Add Data Point</div>
+      <div class="form-row" style="gap:10px;margin-bottom:10px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Date</label>
+          <input class="form-input" type="date" id="hpDate" />
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Value</label>
+          <input class="form-input" type="number" id="hpValue" placeholder="e.g. 50000" min="0" />
+        </div>
+      </div>
+      <button class="btn-primary" style="margin-top:0;" onclick="addHistoryPoint()">+ Add Point</button>
+      <div class="err" id="hpErr" style="margin-top:6px;"></div>
+    </div>
+
+    <!-- Existing points list -->
+    <div style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Existing Points <span id="hpCount" style="color:var(--accent);"></span></div>
+    <div id="historyPointsList" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+    <div style="margin-top:12px;display:flex;gap:8px;">
+      <button class="btn-secondary" style="margin-top:0;font-size:12px;padding:8px;" onclick="clearAllHistory()">🗑 Clear All</button>
+      <button class="btn-primary" style="margin-top:0;" onclick="modalClose('historyEditorOverlay')">Done</button>
     </div>
   </div>
 </div>
@@ -1142,18 +1155,24 @@ function render() {
       <div class="card-name">${i.name}</div>
       <div class="card-value">Value: <strong>${fmt(i.value)}</strong></div>
       <div class="card-stats">
-        <div class="stat-row"><span class="stat-label">Demand:</span><span>${i.demand}</span></div>
-        <div class="stat-row"><span class="stat-label">Stability:</span><span class="stab-${i.stability}">${i.stability}</span></div>
+        ${i.vis&&i.vis.demand===false?'':'<div class="stat-row"><span class="stat-label">Demand:</span><span>'+i.demand+'</span></div>'}
+        ${i.vis&&i.vis.stability===false?'':'<div class="stat-row"><span class="stat-label">Stability:</span><span class="stab-'+i.stability+'">'+i.stability+'</span></div>'}
         <div class="stat-row"><span class="stat-label">Rarity:</span><span class="rarity-text ${i.rarity}">${i.rarity.charAt(0).toUpperCase() + i.rarity.slice(1)}</span></div>
+        ${(i.customDetails||[]).filter(d=>d.visible!==false&&(d.label||d.value)).map(d=>'<div class="stat-row"><span class="stat-label">'+d.label+':</span><span>'+d.value+'</span></div>').join('')}
       </div>
     </div>
   `).join("");
 }
 
 function renderLogo() {
-  document.getElementById("logoEl").innerHTML =
-    state.siteName1 + `<span>${state.siteName2}</span>` + state.siteDomain;
-  document.title = state.siteName1 + state.siteName2 + state.siteDomain;
+  const name = state.siteName1 || "ValueList.gg";
+  const c1 = state.logoColor1 || "#e8f2ff";
+  const c2 = state.logoColor2 || "#3d8eff";
+  const dir = state.logoDir !== undefined ? state.logoDir : 90;
+  const grad = `linear-gradient(${dir}deg, ${c1}, ${c2})`;
+  document.documentElement.style.setProperty("--logo-gradient", grad);
+  document.getElementById("logoEl").textContent = name;
+  document.title = name;
 }
 
 // ─── ADMIN ───────────────────────────────────────────────
@@ -1187,47 +1206,59 @@ function logoutAdmin() {
   document.body.classList.remove("admin-mode");
 }
 
-function openChangePw() {
-  document.getElementById("cpCurrent").value = "";
-  document.getElementById("cpNew").value = "";
-  document.getElementById("cpConfirm").value = "";
-  document.getElementById("cpErr").textContent = "";
-  modalOpen("changePwOverlay");
-}
-
-function doChangePw() {
-  const cur = document.getElementById("cpCurrent").value;
-  const nw = document.getElementById("cpNew").value;
-  const cf = document.getElementById("cpConfirm").value;
-  if (cur !== state.password) { document.getElementById("cpErr").textContent = "Current password is wrong."; return; }
-  if (!nw) { document.getElementById("cpErr").textContent = "New password cannot be empty."; return; }
-  if (nw !== cf) { document.getElementById("cpErr").textContent = "Passwords do not match."; return; }
-  state.password = nw;
-  saveState();
-  modalClose("changePwOverlay");
-  showToast("Password updated ✓");
-}
-
 // ─── SITE SETTINGS ───────────────────────────────────────
+let gradDir = 90;
+
+function setGradDir(btn) {
+  gradDir = parseInt(btn.dataset.deg);
+  document.querySelectorAll('.grad-dir-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateNamePreview();
+}
+
+function syncColorFromHex(pickerId, hexInput) {
+  const val = hexInput.value.trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    document.getElementById(pickerId).value = val;
+    updateNamePreview();
+  }
+}
+
+function updateNamePreview() {
+  const name = document.getElementById("ssName1").value || "ValueList.gg";
+  const c1 = document.getElementById("ssColor1").value;
+  const c2 = document.getElementById("ssColor2").value;
+  document.getElementById("ssColor1Hex").value = c1;
+  document.getElementById("ssColor2Hex").value = c2;
+  const grad = `linear-gradient(${gradDir}deg, ${c1}, ${c2})`;
+  const preview = document.getElementById("namePreview");
+  preview.textContent = name;
+  preview.style.backgroundImage = grad;
+}
+
 function openSiteSettings() {
-  document.getElementById("ssName1").value = state.siteName1;
-  document.getElementById("ssName2").value = state.siteName2;
-  document.getElementById("ssDomain").value = state.siteDomain;
+  document.getElementById("ssName1").value = state.siteName1 || "ValueList.gg";
+  const c1 = state.logoColor1 || "#e8f2ff";
+  const c2 = state.logoColor2 || "#3d8eff";
+  gradDir = state.logoDir !== undefined ? state.logoDir : 90;
+  document.getElementById("ssColor1").value = c1;
+  document.getElementById("ssColor1Hex").value = c1;
+  document.getElementById("ssColor2").value = c2;
+  document.getElementById("ssColor2Hex").value = c2;
+  document.querySelectorAll(".grad-dir-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.dataset.deg) === gradDir);
+  });
   updateNamePreview();
   modalOpen("siteSettingsOverlay");
 }
 
-function updateNamePreview() {
-  const n1 = document.getElementById("ssName1").value || "Value";
-  const n2 = document.getElementById("ssName2").value || "List";
-  const d = document.getElementById("ssDomain").value || ".gg";
-  document.getElementById("namePreview").innerHTML = n1 + `<span>${n2}</span>` + d;
-}
-
 function saveSiteSettings() {
-  state.siteName1 = document.getElementById("ssName1").value || "Value";
-  state.siteName2 = document.getElementById("ssName2").value || "List";
-  state.siteDomain = document.getElementById("ssDomain").value || ".gg";
+  state.siteName1 = document.getElementById("ssName1").value || "ValueList.gg";
+  state.siteName2 = "";
+  state.siteDomain = "";
+  state.logoColor1 = document.getElementById("ssColor1").value;
+  state.logoColor2 = document.getElementById("ssColor2").value;
+  state.logoDir = gradDir;
   saveState();
   renderLogo();
   modalClose("siteSettingsOverlay");
@@ -1300,13 +1331,14 @@ function openAddCard() {
   document.getElementById("cardModalTitle").textContent = "+ Add Item";
   document.getElementById("ciName").value = "";
   document.getElementById("ciValue").value = "";
-  document.getElementById("ciSupply").value = "";
   resetIconPicker("", "");
   document.getElementById("ciRarity").value = "rare";
   document.getElementById("ciDemand").value = "Good";
   document.getElementById("ciStability").value = "Stable";
   document.getElementById("ciDesc").value = "";
   resetVisUI({});
+  ciCustomDetails = [];
+  renderCustomDetails();
   document.getElementById("cardErr").textContent = "";
   document.getElementById("cardDelBtn").style.display = "none";
   populateCatSelect(state.categories[0] || "");
@@ -1320,58 +1352,109 @@ function openEditCard(id) {
   document.getElementById("cardModalTitle").textContent = "✏️ Edit Item";
   document.getElementById("ciName").value = item.name;
   document.getElementById("ciValue").value = item.value;
-  document.getElementById("ciSupply").value = item.supply;
   resetIconPicker(item.emoji || "", item.img || "");
   if (item.img && item.img.startsWith("data:")) { currentImgBase64 = item.img; }
   document.getElementById("ciRarity").value = item.rarity;
   document.getElementById("ciDemand").value = item.demand;
   document.getElementById("ciStability").value = item.stability;
   document.getElementById("ciDesc").value = item.desc || "";
-  resetVisUI(item.vis || { value:true, demand:true, stability:true, desc: item.descVisible !== false, chart:true });
+  resetVisUI(item.vis || { value:true, demand:true, stability:true, desc:true, chart:true });
+  ciCustomDetails = JSON.parse(JSON.stringify(item.customDetails || []));
+  renderCustomDetails();
   document.getElementById("cardErr").textContent = "";
   document.getElementById("cardDelBtn").style.display = "block";
   populateCatSelect(item.type);
   modalOpen("cardOverlay");
 }
 
-// ─── FIELD VISIBILITY TOGGLES ────────────────────────────
-const VIS_FIELDS = ['value','demand','stability','desc','chart'];
-let ciVis = { value:true, demand:true, stability:true, desc:true, chart:true };
+// ─── FIELD VISIBILITY + CUSTOM DETAILS ──────────────────
+// Built-in fields that can be toggled
+const BUILTIN_VIS = [
+  { key:'value',     label:'💰 Value' },
+  { key:'demand',    label:'📈 Demand' },
+  { key:'stability', label:'⚖️ Stability' },
+  { key:'desc',      label:'📝 Description' },
+  { key:'chart',     label:'📊 Price Chart' },
+];
 
-function setVis(field, val) {
-  ciVis[field] = val;
-  const track = document.getElementById('visTrack_'+field);
-  const label = document.getElementById('visLabel_'+field);
-  if (track) track.classList.toggle('on', val);
-  if (label) label.textContent = val ? 'Visible' : 'Hidden';
+let ciVis = {};          // { value:true, demand:true, ... }
+let ciCustomDetails = []; // [{ label:'', value:'', visible:true }, ...]
+
+function renderVisFields() {
+  const container = document.getElementById('visFieldsList');
+  if (!container) return;
+  container.innerHTML = BUILTIN_VIS.map(f => {
+    const on = ciVis[f.key] !== false;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:9px 14px;cursor:pointer;" onclick="toggleVis('${f.key}')">
+      <span style="font-size:12px;color:var(--text-dim);">${f.label}</span>
+      <div style="display:flex;align-items:center;gap:7px;">
+        <span id="visLabel_${f.key}" style="font-size:10px;color:var(--muted);letter-spacing:0.5px;">${on?'Visible':'Hidden'}</span>
+        <div class="toggle-track${on?' on':''}" id="visTrack_${f.key}"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function toggleVis(field) {
-  setVis(field, !ciVis[field]);
+  ciVis[field] = ciVis[field] === false ? true : false;
+  renderVisFields();
 }
 
 function resetVisUI(visObj) {
   ciVis = Object.assign({ value:true, demand:true, stability:true, desc:true, chart:true }, visObj||{});
-  VIS_FIELDS.forEach(f => setVis(f, ciVis[f]));
+  renderVisFields();
 }
 
-// keep old names working
-function updateDescToggleUI() { setVis('desc', ciVis.desc); }
-function toggleDescVis() { toggleVis('desc'); }
+// ─── CUSTOM DETAILS ──────────────────────────────────────
+function renderCustomDetails() {
+  const container = document.getElementById('customDetailsList');
+  if (!container) return;
+  if (!ciCustomDetails.length) {
+    container.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0;">No custom details yet</div>';
+    return;
+  }
+  container.innerHTML = ciCustomDetails.map((d, i) => `
+    <div style="display:flex;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px 10px;">
+      <input class="form-input" style="flex:1;min-width:0;padding:6px 10px;font-size:12px;" placeholder="Label" value="${escHtml(d.label)}" oninput="ciCustomDetails[${i}].label=this.value" />
+      <input class="form-input" style="flex:1.5;min-width:0;padding:6px 10px;font-size:12px;" placeholder="Value" value="${escHtml(d.value)}" oninput="ciCustomDetails[${i}].value=this.value" />
+      <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;" onclick="toggleCustomVis(${i})" title="Toggle visibility">
+        <div class="toggle-track${d.visible!==false?' on':''}" style="width:26px;height:15px;" id="cdvTrack_${i}"><div class="toggle-thumb" style="width:10px;height:10px;top:1.5px;left:1.5px;"></div></div>
+      </div>
+      <button onclick="removeCustomDetail(${i})" style="background:rgba(224,108,117,0.15);border:1px solid rgba(224,108,117,0.2);border-radius:8px;color:#f0a0a0;font-size:13px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.background='rgba(224,108,117,0.3)'" onmouseout="this.style.background='rgba(224,108,117,0.15)'">✕</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function addCustomDetail() {
+  ciCustomDetails.push({ label:'', value:'', visible:true });
+  renderCustomDetails();
+  // focus the new label input
+  const inputs = document.querySelectorAll('#customDetailsList input');
+  if (inputs.length) inputs[inputs.length - 2].focus();
+}
+
+function removeCustomDetail(i) {
+  ciCustomDetails.splice(i, 1);
+  renderCustomDetails();
+}
+
+function toggleCustomVis(i) {
+  ciCustomDetails[i].visible = ciCustomDetails[i].visible === false ? true : false;
+  renderCustomDetails();
+}
 
 function saveCard() {
   const name = document.getElementById("ciName").value.trim();
   const value = parseFloat(document.getElementById("ciValue").value);
-  const supply = parseInt(document.getElementById("ciSupply").value);
   if (!name) { document.getElementById("cardErr").textContent = "Name is required."; return; }
   if (isNaN(value) || value < 0) { document.getElementById("cardErr").textContent = "Enter a valid value."; return; }
-  if (isNaN(supply) || supply < 0) { document.getElementById("cardErr").textContent = "Enter a valid supply."; return; }
 
   const item = {
     id: editingId || uid(),
     name,
     value,
-    supply,
     emoji: document.getElementById("ciEmoji").value || "❓",
     img: currentImgBase64 || document.getElementById("ciImg").value.trim(),
     rarity: document.getElementById("ciRarity").value,
@@ -1380,6 +1463,7 @@ function saveCard() {
     stability: document.getElementById("ciStability").value,
     desc: document.getElementById("ciDesc").value.trim(),
     vis: Object.assign({}, ciVis),
+    customDetails: JSON.parse(JSON.stringify(ciCustomDetails)),
   };
 
   if (editingId) {
@@ -1388,6 +1472,10 @@ function saveCard() {
     const idx = state.items.findIndex(i => i.id === editingId);
     state.items[idx] = item;
     saveState();
+    if (detailChartItemId === item.id) {
+      document.getElementById("detailValue").textContent = fmt(item.value);
+      setTimeout(() => drawChart(item.id), 30);
+    }
     showToast("Item updated ✓");
   } else {
     recordHistory(item.id, item.value);
@@ -1531,6 +1619,8 @@ function drawChart(itemId) {
           ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9, family: 'Inter' }, maxTicksLimit: 6, maxRotation: 0 }
         },
         y: {
+          beginAtZero: true,
+          min: 0,
           grid: { color: 'rgba(255,255,255,0.05)' },
           ticks: { color: 'rgba(255,255,255,0.35)', font: { size: 9, family: 'Inter' }, maxTicksLimit: 5, callback: v => Number(v).toLocaleString() }
         }
@@ -1543,17 +1633,18 @@ function drawChart(itemId) {
 function openItemDetail(id) {
   const item = state.items.find(i => i.id === id);
   if (!item) return;
+  const vis = Object.assign({ value:true, demand:true, stability:true, desc:true, chart:true }, item.vis||{});
 
-  // icon
+  // Icon
   const imgEl = document.getElementById("detailImg");
   imgEl.innerHTML = item.img
     ? `<img src="${item.img}" onerror="this.parentElement.innerHTML='${item.emoji||'❓'}'" />`
     : (item.emoji || '❓');
 
-  // hero background gradient by rarity
+  // Hero rarity gradient
   const rarityColors = {
-    common: '#888,#ccc', uncommon: '#1a6b2a,#3ecf8e', rare: '#0a3a8a,#2a7fff',
-    epic: '#3b0a6b,#a855f7', legendary: '#7a4a00,#f5a623', mythic: '#7a2a00,#ff6b35', divine: '#7a1050,#e94fa0'
+    common:'#888,#ccc',uncommon:'#1a6b2a,#3ecf8e',rare:'#0a3a8a,#2a7fff',
+    epic:'#3b0a6b,#a855f7',legendary:'#7a4a00,#f5a623',mythic:'#7a2a00,#ff6b35',divine:'#7a1050,#e94fa0'
   };
   const col = rarityColors[item.rarity] || '30,30,60';
   document.getElementById("detailHeroBg").style.background =
@@ -1562,20 +1653,60 @@ function openItemDetail(id) {
   document.getElementById("detailName").textContent = item.name;
   document.getElementById("detailRarity").textContent = item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1);
   document.getElementById("detailRarity").className = `detail-rarity-badge ${item.rarity}`;
-  document.getElementById("detailValue").textContent = fmt(item.value);
-  document.getElementById("detailDemand").textContent = item.demand;
 
+  // Value block
+  const valBlock = document.getElementById("detailValueBlock");
+  if (valBlock) valBlock.style.display = vis.value ? "" : "none";
+  document.getElementById("detailValue").textContent = fmt(item.value);
+
+  // Stats grid: demand + stability
+  const demandCell = document.getElementById("detailDemandCell");
+  const stabCell = document.getElementById("detailStabCell");
+  if (demandCell) demandCell.style.display = vis.demand ? "" : "none";
+  if (stabCell) stabCell.style.display = vis.stability ? "" : "none";
+  document.getElementById("detailDemand").textContent = item.demand;
   const stabEl = document.getElementById("detailStability");
   stabEl.textContent = item.stability;
   stabEl.className = `detail-stat-cell-value stab-${item.stability}`;
+
+  // Description
+  const descCell = document.getElementById("detailDescCell");
+  const descEl = document.getElementById("detailDesc");
+  const showDesc = vis.desc && item.desc && item.desc.trim();
+  descCell.style.display = showDesc ? "" : "none";
+  if (showDesc) descEl.textContent = item.desc;
+
+  // Custom details
+  const customGrid = document.getElementById("detailCustomGrid");
+  const customs = (item.customDetails || []).filter(d => d.visible !== false && (d.label||d.value));
+  if (customGrid) {
+    if (customs.length) {
+      customGrid.innerHTML = customs.map(d =>
+        `<div class="detail-stat-cell">
+          <div class="detail-stat-cell-label">${escHtml(d.label)||'Detail'}</div>
+          <div class="detail-stat-cell-value">${escHtml(d.value)||'—'}</div>
+        </div>`
+      ).join('');
+      customGrid.style.display = "";
+    } else {
+      customGrid.style.display = "none";
+    }
+  }
+
+  // Chart section
+  const chartSection = document.getElementById("detailChartSection");
+  if (chartSection) chartSection.style.display = vis.chart ? "" : "none";
+
+  // Admin edit history button
+  const editBtn = document.getElementById("editHistoryBtn");
+  if (editBtn) editBtn.style.display = isAdmin ? "" : "none";
 
   detailChartItemId = id;
   detailChartRange = '1m';
   document.querySelectorAll('.chart-range-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
 
   modalOpen("itemDetailOverlay");
-  // Draw after the overlay is visible so canvas has dimensions
-  requestAnimationFrame(() => drawChart(id));
+  if (vis.chart) setTimeout(() => drawChart(id), 30);
 }
 
 // ─── HELPERS ─────────────────────────────────────────────
@@ -1669,29 +1800,97 @@ function showToast(msg) {
 }
 
 
-function seedHistoryIfEmpty() {
+// ─── HISTORY EDITOR ─────────────────────────────────────
+function openHistoryEditor() {
+  if (!detailChartItemId) return;
+  renderHistoryPointsList();
+  // Default date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('hpDate').value = today;
+  document.getElementById('hpValue').value = '';
+  document.getElementById('hpErr').textContent = '';
+  modalOpen('historyEditorOverlay');
+}
+
+function renderHistoryPointsList() {
   if (!state.history) state.history = {};
-  state.items.forEach(item => {
-    if (!state.history[item.id] || state.history[item.id].length === 0) {
-      // Generate 10 plausible past data points over last 6 months
-      const points = [];
-      const now = Date.now();
-      const sixMonths = 180 * 86400000;
-      for (let i = 10; i >= 0; i--) {
-        const t = now - (sixMonths / 10) * i;
-        const noise = (Math.random() - 0.5) * item.value * 0.15;
-        const v = Math.max(0, Math.round(item.value * (0.75 + 0.25 * (i/10)) + noise));
-        points.push({ t, v });
-      }
-      points.push({ t: now, v: item.value });
-      state.history[item.id] = points;
-    }
-  });
+  const pts = (state.history[detailChartItemId] || []).slice().sort((a,b) => b.t - a.t);
+  document.getElementById('hpCount').textContent = '(' + pts.length + ')';
+  const list = document.getElementById('historyPointsList');
+  if (!pts.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:12px;text-align:center;padding:16px;">No data points yet</div>';
+    return;
+  }
+  list.innerHTML = pts.map((p, i) => {
+    const d = new Date(p.t);
+    const dateStr = d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    // Find real index in unsorted array
+    const realIdx = (state.history[detailChartItemId] || []).findIndex(x => x.t === p.t && x.v === p.v);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:10px 14px;">
+      <div>
+        <div style="font-size:12px;color:var(--text);">${fmt(p.v)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${dateStr}</div>
+      </div>
+      <button onclick="deleteHistoryPoint(${realIdx})" style="background:rgba(224,108,117,0.15);border:1px solid rgba(224,108,117,0.25);border-radius:8px;color:#f0a0a0;font-size:11px;padding:5px 10px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='rgba(224,108,117,0.3)'" onmouseout="this.style.background='rgba(224,108,117,0.15)'">Delete</button>
+    </div>`;
+  }).join('');
+}
+
+function addHistoryPoint() {
+  const dateVal = document.getElementById('hpDate').value;
+  const valStr = document.getElementById('hpValue').value;
+  const errEl = document.getElementById('hpErr');
+  errEl.textContent = '';
+
+  if (!dateVal) { errEl.textContent = 'Pick a date.'; return; }
+  const val = parseFloat(valStr);
+  if (isNaN(val) || val < 0) { errEl.textContent = 'Enter a valid value.'; return; }
+
+  const t = new Date(dateVal).getTime();
+  if (!state.history) state.history = {};
+  if (!state.history[detailChartItemId]) state.history[detailChartItemId] = [];
+
+  state.history[detailChartItemId].push({ t, v: val });
+  state.history[detailChartItemId].sort((a, b) => a.t - b.t);
   saveState();
+
+  document.getElementById('hpValue').value = '';
+  renderHistoryPointsList();
+  drawChart(detailChartItemId);
+  showToast('Point added ✓');
+}
+
+function deleteHistoryPoint(idx) {
+  if (!state.history || !state.history[detailChartItemId]) return;
+  state.history[detailChartItemId].splice(idx, 1);
+  saveState();
+  renderHistoryPointsList();
+  drawChart(detailChartItemId);
+}
+
+function clearAllHistory() {
+  if (!state.history) return;
+  if (!confirm('Delete ALL history points for this item?')) return;
+  state.history[detailChartItemId] = [];
+  saveState();
+  renderHistoryPointsList();
+  drawChart(detailChartItemId);
+  showToast('History cleared');
 }
 
 // ─── INIT ────────────────────────────────────────────────
-seedHistoryIfEmpty();
+// Ensure history object exists; never seed fake data
+if (!state.history) { state.history = {}; saveState(); }
+// Migration: wipe any fake multi-point seeded history from old versions
+// (real history only ever has 1 point per save, never 11+ points on first load)
+(function migrateFakeHistory() {
+  if (!state._historyMigrated) {
+    state.history = {};
+    state._historyMigrated = true;
+    saveState();
+  }
+})();
+
 renderLogo();
 renderTabs();
 render();
