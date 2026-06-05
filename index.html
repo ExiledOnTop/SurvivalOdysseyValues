@@ -1569,7 +1569,13 @@ function openItemDetail(id) {
   stabEl.textContent = item.stability;
   stabEl.className = `detail-stat-cell-value stab-${item.stability}`;
 
+  detailChartItemId = id;
+  detailChartRange = '1m';
+  document.querySelectorAll('.chart-range-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
+
   modalOpen("itemDetailOverlay");
+  // Draw after the overlay is visible so canvas has dimensions
+  requestAnimationFrame(() => drawChart(id));
 }
 
 // ─── HELPERS ─────────────────────────────────────────────
